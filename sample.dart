@@ -1,6 +1,8 @@
 import '../../dart_utils/lib/dart_utils.dart' as dart_util;
 import '../../dart_utils/lib/get_file_name.dart' as get_file_name;
 
+// run with, e.g., /usr/local/opt/dart/bin/dart bin/sample.dart -p
+
 void main(List<String> arguments) async {
   var fileName = 'input/${get_file_name.getFileName(arguments)}';
   List lineList = await dart_util.openFile(fileName);
