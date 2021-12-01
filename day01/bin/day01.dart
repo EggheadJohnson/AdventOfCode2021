@@ -11,7 +11,7 @@ import '../../dart_utils/lib/get_file_name.dart' as get_file_name;
 void main(List<String> arguments) async {
   var fileName = 'input/${get_file_name.getFileName(arguments)}';
   List lineList = await dart_util.openFile(fileName);
-  var parsedLines = lineList.map((i) => int.parse(i)).toList();
+  List<int> parsedLines = lineList.map((i) => int.parse(i)).toList();
 
   print("Opened $fileName with ${lineList.length} lines");
 
@@ -34,16 +34,16 @@ int solvePartA(List lineList) {
   return count;
 }
 
-List parseToSums(List lineList) {
+List parseToSums(List<int> lineList) {
   List result = [];
 
   for (var i = 0; i < lineList.length - 2; i++) {
-    result.add(lineList[i]+lineList[i+1]+lineList[i+2]);
+    result.add(lineList.sublist(i, i+3).reduce((tot, val) => tot+val));
   }
 
   return result;
 }
 
-int solvePartB(List lineList) {
+int solvePartB(List<int> lineList) {
   return solvePartA(parseToSums(lineList));
 }
