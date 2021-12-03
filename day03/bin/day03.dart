@@ -34,7 +34,7 @@ List getSumsPerPosition(List lineList) {
   }
 
   for (var line in lineList) {
-    var split_line = line.split('').map((i) => int.parse(i)).toList();
+    var split_line = line.split('').map((i) => i == '1' ? 1 : -1).toList();
     for (var i = 0; i < split_line.length; i++) {
       result[i] += split_line[i];
     }
@@ -43,12 +43,12 @@ List getSumsPerPosition(List lineList) {
   return result;
 }
 
-List getGamma(int lineListLength, List sumsPerPosition) {
-  return sumsPerPosition.map((s) => s >= lineListLength / 2 ? 1 : 0).toList();
+List getGamma(List sumsPerPosition) {
+  return sumsPerPosition.map((s) => s >= 0 ? 1 : 0).toList();
 }
 
-List getEpsilon(int lineListLength, List sumsPerPosition) {
-  return sumsPerPosition.map((s) => s >= lineListLength / 2 ? 0 : 1).toList();
+List getEpsilon(List sumsPerPosition) {
+  return sumsPerPosition.map((s) => s >= 0 ? 0 : 1).toList();
 }
 
 int fromBinary(List binaryItems) {
@@ -68,7 +68,7 @@ List getOxygenRating(List lineList) {
   var pos = 0;
 
   while (lineList.length > 1 && pos < lineList[0].length) {
-    var gamma = getGamma(lineList.length, getSumsPerPosition(lineList));
+    var gamma = getGamma(getSumsPerPosition(lineList));
     lineList = lineList.where((l) => l.split('').map((i) => int.parse(i)).toList()[pos] == gamma[pos]).toList();
     pos += 1;
   }
@@ -81,7 +81,7 @@ List getCO2ScrubberRating(List lineList) {
   var pos = 0;
 
   while (lineList.length > 1 && pos < lineList[0].length) {
-    var epsilon = getEpsilon(lineList.length, getSumsPerPosition(lineList));
+    var epsilon = getEpsilon(getSumsPerPosition(lineList));
     lineList = lineList.where((l) => l.split('').map((i) => int.parse(i)).toList()[pos] == epsilon[pos]).toList();
     pos += 1;
   }
@@ -93,9 +93,9 @@ int solvePartA(List lineList) {
   var shouldPrint = false;
   var sumsPerPosition = getSumsPerPosition(lineList);
   if (shouldPrint) print(sumsPerPosition);
-  var gamma = getGamma(lineList.length, sumsPerPosition);
+  var gamma = getGamma(sumsPerPosition);
   if (shouldPrint) print(gamma);
-  var epsilon = getEpsilon(lineList.length, sumsPerPosition);
+  var epsilon = getEpsilon(sumsPerPosition);
   if (shouldPrint) print(epsilon);
   var gamma_number = fromBinary(gamma);
   if (shouldPrint) print(gamma_number);
