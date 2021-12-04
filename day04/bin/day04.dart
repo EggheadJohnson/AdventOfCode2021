@@ -109,6 +109,26 @@ void printBoard(Map board) {
   print('~~~~~~~~~~~~~~~~~');
 }
 
+bool isThereAWinner(List boards) {
+  for (var board in boards) {
+    if (board['cols'].contains(5) || board['rows'].contains(5) || board['diags'].contains(5)) return true;
+  }
+  return false;
+}
+
+Map extractWinnter(List boards) {
+  for (var board in boards) {
+    if (board['cols'].contains(5) || board['rows'].contains(5) || board['diags'].contains(5)) return board;
+  }
+  return {
+    'error': 'No winner found',
+  };
+}
+
+int calculateBoard(String spot, Map board) {
+  return board['board'].reduce((tot, val) => tot + val == '.' ? 0 : int.parse(val)) * int.parse(spot);
+}
+
 int solvePartA(List spots, List boards) {
   print(spots);
   print(boards);
@@ -123,7 +143,7 @@ int solvePartA(List spots, List boards) {
     printBoard(board);
   }
 
-  return -1;
+  return calculateBoard(boards[0]);
 }
 
 int solvePartB(List spots, List boards) {
