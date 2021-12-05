@@ -3,6 +3,13 @@ import '../../dart_utils/lib/get_file_name.dart' as get_file_name;
 
 // run with, e.g., /usr/local/opt/dart/bin/dart bin/sample.dart -p
 
+/**
+ * Opening input/puzzle.txt
+ * Opened input/puzzle.txt with 601 lines
+ * Part A Solution: 23177
+ * Part B Solution: 6804
+ */
+
 void main(List<String> arguments) async {
   var fileName = 'input/${get_file_name.getFileName(arguments)}';
   List lineList = await dart_util.openFile(fileName);
@@ -12,12 +19,17 @@ void main(List<String> arguments) async {
   var boards = parseAllBoards(lineList.sublist(2));
 
   var partA = solvePartA(spots, boards);
+  boards = parseAllBoards(lineList.sublist(2));
   var partB = solvePartB(spots, boards);
 
 
   print("Part A Solution: $partA");
   print("Part B Solution: $partB");
 
+}
+
+bool shouldPrint() {
+  return false;
 }
 
 Map parseBoard(List boardLines) {
@@ -32,9 +44,9 @@ Map parseBoard(List boardLines) {
   return {
     'cols': [0, 0, 0, 0, 0,],
     'rows': [0, 0, 0, 0, 0,],
-    'diags': [0, 0,],
     'board': split_lines,
     'mapped': val_to_pos_map,
+    'has_won': false,
   };
 }
 
@@ -77,12 +89,8 @@ List takeSingleStep(String spot, List boards) {
       board['board'][spot_pos[0]][spot_pos[1]] = '.';
       board['cols'][spot_pos[1]] += 1;
       board['rows'][spot_pos[0]] += 1;
-      if (spot_pos[0] == spot_pos[1]) {
-        board['diags'][0] += 1;
-      }
-      if (spot_pos[0] + spot_pos[1] == 4) {
-        board['diags'][1] += 1;
-      }
+
+      if (board['cols'].contains(5) || board['rows'].contains(5)) board['has_won'] = true;
     }
   }
   return boards;
@@ -104,21 +112,21 @@ void printBoard(Map board) {
   print('');
   print('cols: ${board['cols']}');
   print('rows: ${board['rows']}');
-  print('diags: ${board['diags']}');
+  print('has won: ${board['has_won']}');
   print('');
   print('~~~~~~~~~~~~~~~~~');
 }
 
 bool isThereAWinner(List boards) {
   for (var board in boards) {
-    if (board['cols'].contains(5) || board['rows'].contains(5) || board['diags'].contains(5)) return true;
+    if (board['cols'].contains(5) || board['rows'].contains(5)) return true;
   }
   return false;
 }
 
-Map extractWinnter(List boards) {
+Map extractWinner(List boards) {
   for (var board in boards) {
-    if (board['cols'].contains(5) || board['rows'].contains(5) || board['diags'].contains(5)) return board;
+    if (board['cols'].contains(5) || board['rows'].contains(5)) return board;
   }
   return {
     'error': 'No winner found',
@@ -126,26 +134,58 @@ Map extractWinnter(List boards) {
 }
 
 int calculateBoard(String spot, Map board) {
-  return board['board'].reduce((tot, val) => tot + val == '.' ? 0 : int.parse(val)) * int.parse(spot);
+  var board_sum = 0;
+  for (var line in board['board']) {
+    for (var val in line) {
+      if (val != '.') board_sum += int.parse(val);
+    }
+  }
+  return int.parse(spot) * board_sum;
 }
 
 int solvePartA(List spots, List boards) {
-  print(spots);
-  print(boards);
+  if (shouldPrint() && false) {
+    print(spots);
+    print(boards);
 
-  for (var board in boards) {
-    printBoard(board);
+    for (var board in boards) {
+      printBoard(board);
+    }
   }
 
-  boards = takeSingleStep(spots[0], boards);
-
-  for (var board in boards) {
-    printBoard(board);
+  var spot_ctr = -1;
+  var spot;
+  while (!isThereAWinner(boards)) {
+    spot_ctr++;
+    spot = spots[spot_ctr];
+    boards = takeSingleStep(spot, boards);
   }
 
-  return calculateBoard(boards[0]);
+  var winning_board = extractWinner(boards);
+
+  if (shouldPrint() && false) {
+    printBoard(winning_board);
+    print(spot);
+  }
+
+  return calculateBoard(spot, winning_board);
 }
 
 int solvePartB(List spots, List boards) {
-  return -1;
+  var spot_ctr = -1;
+  var spot;
+  while (boards.length > 1 || !boards[0]['has_won']) {
+    spot_ctr++;
+    spot = spots[spot_ctr];
+    boards = takeSingleStep(spot, boards);
+    if (boards.length > 1) boards.retainWhere((board) => !board['has_won']);
+    if (shouldPrint()) {
+      print(boards.length);
+      printBoard(boards[0]);
+    }
+  }
+
+  if (shouldPrint()) printBoard(boards[0]);
+
+  return calculateBoard(spot, boards[0]);
 }
