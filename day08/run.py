@@ -1,7 +1,5 @@
-import os
-from a import a
-from b import b
-import pprint, argparse
+import os, argparse
+from solutions import part1, part2
 
 '''
 Opening /puzzle.txt
@@ -13,8 +11,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--puzzle', action='store_true', help='Use the live puzzle data')
 args = parser.parse_args()
 
-pp = pprint.PrettyPrinter(indent=4)
-
 file_path = os.path.dirname(os.path.realpath(__file__))
 file_name = '/sample.txt'
 if args.puzzle:
@@ -25,5 +21,5 @@ print('Opening {}'.format(file_name))
 
 inpt = [ line.strip() for line in open(input_path, 'r')]
 
-print("result A:", a(inpt, pp))
-print("result B:", b(inpt, pp))
+print("result Part 1:", part1(inpt))
+print("result Part 2:", part2(inpt))

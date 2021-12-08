@@ -1,11 +1,32 @@
-from a import splitInput
+import pprint
 from functools import reduce
 
-def hasOne(line):
-    return len([ d for d in line if len(d) == 2 ]) > 0
+pp = pprint.PrettyPrinter(indent=4)
 
-def hasSeven(line):
-    return len([ d for d in line if len(d) == 3 ]) > 0
+def part1(input):
+    signals, outputs = splitInput(input)
+    total = 0
+    for output in outputs:
+        total += len([ o for o in output if len(o) in (2, 3, 4, 7) ])
+    return total
+
+def part2(input):
+    signals, outputs = splitInput(input)
+    total = 0
+    for i, signal in enumerate(signals):
+        line = signal + outputs[i]
+        valueMap = buildValueMap(line)
+        total += findOutputVal(valueMap, outputs[i])
+    return total
+
+def splitInput(input):
+    signals = []
+    outputs = []
+    for line in input:
+        signal, output = line.split(' | ')
+        signals.append(signal.split(' '))
+        outputs.append(output.split(' '))
+    return signals, outputs
 
 def findZero(line):
     middle = findMiddle(line)
@@ -91,12 +112,3 @@ def buildValueMap(line):
 def findOutputVal(valueMap, output):
     outputNumber = ''.join([valueMap[''.join(sorted(o))] for o in output])
     return int(outputNumber)
-
-def b(input, pp):
-    signals, outputs = splitInput(input)
-    total = 0
-    for i, signal in enumerate(signals):
-        line = signal + outputs[i]
-        valueMap = buildValueMap(line)
-        total += findOutputVal(valueMap, outputs[i])
-    return total
