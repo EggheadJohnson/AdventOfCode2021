@@ -34,11 +34,11 @@ def printPoints(points):
     for i in range(max_y + 1):
         line = []
         for j in range(max_x + 1):
-            line.append('.')
+            line.append(' ')
         board.append(line)
 
     for point in points:
-        board[point[1]][point[0]] = '#'
+        board[point[1]][point[0]] = u'\u2588'
 
     print('~' * (max_x + 1))
     for line in board:

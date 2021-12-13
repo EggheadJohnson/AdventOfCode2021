@@ -2,6 +2,20 @@ import os
 from solutions import part1, part2
 import argparse
 
+'''
+Opening /puzzle.txt
+result Part 1: 795
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ ██  ████   ██ █  █ █    █  █  ██    ██
+█  █ █       █ █ █  █    █  █ █  █    █
+█    ███     █ ██   █    █  █ █       █
+█    █       █ █ █  █    █  █ █ ██    █
+█  █ █    █  █ █ █  █    █  █ █  █ █  █
+ ██  ████  ██  █  █ ████  ██   ███  ██
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+result Part 2: 88
+'''
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--puzzle', action='store_true', help='Use the live puzzle data')
 args = parser.parse_args()
