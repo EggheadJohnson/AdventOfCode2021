@@ -2,6 +2,14 @@ import os
 from solutions import part1, part2
 import argparse
 
+'''
+Opening /puzzle.txt
+ISSUES FOUND
+END ISSUES FOUND
+result Part 1: (3213, 3213.0)
+result Part 2: 3711743744429.0
+'''
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--puzzle', action='store_true', help='Use the live puzzle data')
 args = parser.parse_args()

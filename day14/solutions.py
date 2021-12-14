@@ -19,12 +19,26 @@ def getSplitCompound(compound):
     return splitCompound
 
 def takeNewStep(splitCompound, reactions):
-
+    inputCompoundPairs = splitCompound.keys()
+    changes = {}
+    for pair in inputCompoundPairs:
+        result = reactions[pair]
+        newPairs = (pair[0], result), (result, pair[1])
+        changes[newPairs[0]] = changes.get(newPairs[0], 0) + splitCompound[pair]
+        changes[newPairs[1]] = changes.get(newPairs[1], 0) + splitCompound[pair]
+    return changes
 
 def getCounts(compound):
     compoundCounts = {}
     for c in compound:
         compoundCounts[c] = compoundCounts.get(c, 0) + 1
+    return compoundCounts
+
+def getNewCounts(splitCompound):
+    compoundCounts = {}
+    for key, val in splitCompound.items():
+        for c in key:
+            compoundCounts[c] = compoundCounts.get(c, 0) + val/2
     return compoundCounts
 
 def minMaxCompoundCounts(compoundCounts):
@@ -41,47 +55,38 @@ def minMaxCompoundCounts(compoundCounts):
 def part1(input):
     compound = input[0]
     reactions = input[2:]
-    pp.pprint(compound)
     reactions = parseReactions(reactions)
-    pp.pprint(reactions)
-    min = None
-    max = None
-    prevMin = None
-    prevMax = None
-    for x in range(20):
-        # if min and max:
-        #     prevMin, prevMax = compoundCounts[min], compoundCounts[max]
+    splitCompound = getSplitCompound(compound)
+    for x in range(10):
         compound = takeOneStep(compound, reactions)
-        # compoundCounts = getCounts(compound)
-        #
-        #
-        # min, max = minMaxCompoundCounts(compoundCounts)
-        # # print(compound)
-        # print('max: {} {} min: {} {}'.format(max, compoundCounts[max], min, compoundCounts[min]))
-        # if prevMax:
-        #     print('max: {} val: {} delta: {} ratio: {}'.format(max, compoundCounts[max], compoundCounts[max] - prevMax, compoundCounts[max] / prevMax))
-        # if prevMin:
-        #     print('min: {} val: {} delta: {} ratio: {}'.format(min, compoundCounts[min], compoundCounts[min] - prevMin, compoundCounts[min] / prevMin))
-        # print('max: {} {}% min: {} {}%'.format(max, compoundCounts[max]/len(compound), min, compoundCounts[min]/len(compound)))
+        splitCompound = takeNewStep(splitCompound, reactions)
+
+    print('ISSUES FOUND')
+    for pair in splitCompound:
+        if splitCompound[pair] != getSplitCompound(compound)[pair]:
+            print('diff', pair, splitCompound[pair], getSplitCompound(compound)[pair])
+    for pair in getSplitCompound(compound):
+        if splitCompound[pair] != getSplitCompound(compound)[pair]:
+            print('ffid', pair, getSplitCompound(compound)[pair], splitCompound[pair])
+    print('END ISSUES FOUND')
+
     compoundCounts = getCounts(compound)
-    # print(reactions)
-    pp.pprint(compoundCounts)
+    newCompoundCounts = getNewCounts(splitCompound)
+    newCompoundCounts[input[0][0]] += 0.5
+    newCompoundCounts[input[0][-1]] += 0.5
     min, max = minMaxCompoundCounts(compoundCounts)
-    print(min, max)
-    return compoundCounts[max] - compoundCounts[min]
+    newMin, newMax = minMaxCompoundCounts(newCompoundCounts)
+    return compoundCounts[max] - compoundCounts[min], newCompoundCounts[newMax] - newCompoundCounts[newMin]
 
 def part2(input):
-    return -1
     compound = input[0]
     reactions = input[2:]
-    pp.pprint(compound)
     reactions = parseReactions(reactions)
+    splitCompound = getSplitCompound(compound)
     for x in range(40):
-        print(x, len(compound))
-        compound = takeOneStep(compound, reactions)
-    compoundCounts = getCounts(compound)
-    # print(reactions)
-    pp.pprint(compoundCounts)
-    min, max = minMaxCompoundCounts(compoundCounts)
-    print(min, max)
-    return compoundCounts[max] - compoundCounts[min]
+        splitCompound = takeNewStep(splitCompound, reactions)
+    newCompoundCounts = getNewCounts(splitCompound)
+    newCompoundCounts[input[0][0]] += 0.5
+    newCompoundCounts[input[0][-1]] += 0.5
+    newMin, newMax = minMaxCompoundCounts(newCompoundCounts)
+    return newCompoundCounts[newMax] - newCompoundCounts[newMin]
