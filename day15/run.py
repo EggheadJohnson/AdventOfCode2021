@@ -2,6 +2,14 @@ import os
 from solutions import part1, part2
 import argparse
 
+'''
+➜  day15 git:(main) ✗ time python3 run.py --puzzle
+Opening /puzzle.txt
+result Part 1: 673
+result Part 2: 2893
+python3 run.py --puzzle  20.44s user 0.05s system 99% cpu 20.500 total
+'''
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--puzzle', action='store_true', help='Use the live puzzle data')
 args = parser.parse_args()

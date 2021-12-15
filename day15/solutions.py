@@ -1,31 +1,11 @@
-import pprint
+import pprint, sys
 from collections import deque
+sys.path.append('../python_utils')
+
+from Board2D import Board2D
+from dijkstra import dijkstra
 
 pp = pprint.PrettyPrinter(indent=4)
-
-class Board2D:
-    def __init__(self, positions):
-        self.board = [ list(map(int, list(line))) for line in positions]
-    def printBoard(self, separator=''):
-        boardMaxVal = max([max(line) for line in self.board])
-        boardMaxLen = len(str(boardMaxVal))
-        for line in self.board:
-            print(separator.join(map(str, line)))
-    def getPosition(self, position):
-        return self.board[position[0]][position[1]]
-    def setPosition(self, position, value):
-        self.board[position[0]][position[1]] = value
-    def isPositionInBoard(self, position):
-        return position[0] >= 0 and position[0] < len(self.board) and position[1] >= 0 and position[1] < len(self.board[0])
-    def getAdjacentPositions(self, position):
-        return list(filter(self.isPositionInBoard, [
-            (position[0] - 1, position[1]),
-            (position[0] + 1, position[1]),
-            (position[0], position[1] - 1),
-            (position[0], position[1] + 1),
-        ]))
-    def getLastPosition(self):
-        return (len(self.board) - 1, len(self.board[len(self.board) - 1]) - 1)
 
 def parseInput(input):
     return [ list(map(int, line)) for line in input ]
@@ -66,37 +46,6 @@ def buildMultiMap(input):
                 outputRow.extend( [ i + x + y - 9 if i + x + y > 9 else i + x + y for i in inputRow ] )
             output.append(outputRow)
     return output
-
-def getShortestCurrentPath(shortestPathDict, seenButNotVisited):
-    min = None
-    for k in seenButNotVisited:
-        if not min or shortestPathDict[k] < shortestPathDict[min]:
-            min = k
-    return min
-
-def dijkstra(board, startingPosition, endingPosition):
-    shortestPathDict = {
-        startingPosition: 0
-    }
-    visited = set()
-    seenButNotVisited = set([(0, 0)])
-
-    shortestPathPos = startingPosition
-
-    while True:
-        pos = getShortestCurrentPath(shortestPathDict, seenButNotVisited)
-        if pos == endingPosition:
-            return shortestPathDict[pos]
-        for p in board.getAdjacentPositions(pos):
-            if p not in visited:
-                seenButNotVisited.add(p)
-            if p not in shortestPathDict or board.getPosition(p) + shortestPathDict[pos] < shortestPathDict[p]:
-                shortestPathDict[p] = board.getPosition(p) + shortestPathDict[pos]
-            if p not in visited and shortestPathDict[p] < shortestPathDict[shortestPathPos]:
-                shortestPathPos = p
-        seenButNotVisited.remove(pos)
-        visited.add(pos)
-
 
 def part1(input):
     square = parseInput(input)
