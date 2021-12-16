@@ -1,4 +1,8 @@
-import pprint
+import pprint, sys
+sys.path.append('../python_utils')
+
+from Board2D import Board2D
+from dijkstra import dijkstra
 
 pp = pprint.PrettyPrinter(indent=4)
 
