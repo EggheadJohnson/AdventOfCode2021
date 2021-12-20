@@ -14,7 +14,7 @@ def getTarget(line):
     y = tuple(map(int, y[2:].split('..')))
     return x, y
 
-def getTriangleNumbers(i=50):
+def getTriangleNumbers(i=100):
     triangleNums = [1]
     for j in range(2, i+1):
         triangleNums.append(triangleNums[-1] + j)
@@ -54,12 +54,63 @@ def getAllFuturePositionsForVelocity(velocity, target):
         velocity[1] -= 1
         print('pos: {} vel: {}'.format(position, velocity))
 
+def getYSteps(yVelocities, yTarget):
+    stepCtr = {}
+    for vy0 in yVelocities:
+        ypos = 0
+        steps = 0
+        vy = vy0
+        while ypos not in range(yTarget[0], yTarget[1]+1):
+            ypos += vy
+            vy -= 1
+            steps += 1
+        if steps not in stepCtr:
+            stepCtr[steps] = set()
+        stepCtr[steps].add(vy0)
+    return stepCtr
+
+def getXSteps(xVelocity, xTarget):
+    stepCtr = 0
+    xPos = 0
+    steps = []
+    while xVelocity > 0 and xPos <= max(xTarget):
+        xPos += xVelocity
+        xVelocity -= 1
+        stepCtr += 1
+        if xPos in range(xTarget[0], xTarget[1] + 1):
+            steps.append(stepCtr)
+    return steps
+
+def getPotentialXVelocities(xTarget):
+    xMax = max(xTarget)
+    xMin = min(xTarget)
+    potentialVelocities = getTriangleNumbers(xMax)
+    xVelocitiesBySteps = {}
+    for xv in range(xMax):
+        steps = getXSteps(xv, xTarget)
+        for step in steps:
+            if step not in xVelocitiesBySteps:
+                xVelocitiesBySteps[step] = set()
+            xVelocitiesBySteps[step].add(xv)
+    return xVelocitiesBySteps
+
 
 def part2(input):
     xTarget, yTarget = getTarget(input[0])
     compMethod = sorted(filter(lambda x: x[1], [(i, getPositionsDownTo(i, yTarget)) for i in range(-80, 80)]), reverse=True)
     yVelocities = list(map(lambda x: x[0], compMethod))
-    getAllFuturePositionsForVelocity([15,-3], (xTarget, yTarget))
+    yStepCtr = getYSteps(yVelocities, yTarget)
+    xStepCtr = getPotentialXVelocities(xTarget)
     pp.pprint(len(compMethod))
     pp.pprint(yVelocities)
-    return None
+    pp.pprint(yStepCtr)
+    pp.pprint(xStepCtr)
+
+    velocities = []
+    for keyVY in yStepCtr:
+        print('key: ', keyVY)
+        pp.pprint(yStepCtr[keyVY])
+        pp.pprint(xStepCtr.get(keyVY, []))
+        velocities.append(len(yStepCtr[keyVY]) * len(xStepCtr.get(keyVY, [])))
+
+    return sum(velocities)

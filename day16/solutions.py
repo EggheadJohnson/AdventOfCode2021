@@ -33,6 +33,7 @@ def hexToBin(line):
         'E': '1110',
         'F': '1111'
     }
+    print('hextobin', ''.join([hexToBinDict[c] for c in line]))
     return ''.join([hexToBinDict[c] for c in line])
 
 # you have to guarantee the line starts with a packet.
